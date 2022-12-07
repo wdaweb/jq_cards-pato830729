@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: url(./撲克牌/wood-texture-background-free-vector.jpg);
+    }
+
+    .card {
+      width: 150px;
+      height: 150px;
+      position: relative;
+      float: left;
+      margin: 10px;
+      transition: transform 1s;
+      /* 設定子元素在 3D 空間內 */
+      transform-style: preserve-3d;
+    }
+
+    .card-front {
+      width: 100%;
+      height: 100%;
+      background-image: url(./撲克牌/1_a.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: absolute;
+      /* 設定隱藏背面 */
+      backface-visibility: hidden;
+      -webkit-filter: drop-shadow(0px 0px 7px rgba(51, 14, 14, 0.8));
+      filter: drop-shadow(0px 0px 7px rgba(51, 14, 14, 0.8));
+    }
+
+    .card-back {
+      width: 100%;
+      height: 100%;
+      background-image: url(./撲克牌/card_bg.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: absolute;
+      transform: rotateY(180deg);
+      /* 設定隱藏背面 */
+      backface-visibility: hidden;
+      -webkit-filter: drop-shadow(0px 0px 7px rgba(51, 14, 14, 0.8));
+      filter: drop-shadow(0px 0px 7px rgba(51, 14, 14, 0.8));
+    }
+
+    .card-close {
+      transform: rotateY(180deg);
+    }
+
+    #game {
+      width: 1360px;
+      height: 680px;
+      /* background: black; */
+    }
+  </style>
+</head>
+
+<body>
+  <h1 style="color: white;">英文單字配對</h1>
+  <div id="game"></div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js'
+    integrity='sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=='
+    crossorigin='anonymous'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // 產生卡片
+    for (let i = 0; i < 32; i++) {
+      $('#game').append(`
+        <div class="card card-close">
+          <div class="card-front"></div>
+          <div class="card-back"></div>
+        </div>
+      `)
+    }
+    // for (let i = 0; i < $('.card').length; i++) {
+    //   // 決定數字
+    //   const num = i % ($('.card').length / 2) + 1
+    //   $('.card').eq(i).find('.card-front').css('background-image', `url(./撲克牌/${num}_a.png)`)
+    //   $('.card').eq(i).attr('data-num', num)
+    //   // 打散
+    //   const target = Math.round(Math.random() * ($('.card').length - 1))
+    //   $('.card').eq(target).insertAfter($('.card').eq(i))
+    // }
+
+    for (let i = 0; i < 16; i++) {
+      for (let e = 0; e < 2; e++) {
+        if (e === 0) {
+          const num = i % ($('.card').length) + 1
+          $('.card').eq(i).find('.card-front').css('background-image', `url(./撲克牌/${num}_1.png)`)
+          $('.card').eq(i).attr('data-num', num)
+          // console.log(num)
+        } else {
+          const num = i % ($('.card').length) + 1
+          $('.card').eq(i + 16).find('.card-front').css('background-image', `url(./撲克牌/${num}_2.png)`)
+          $('.card').eq(i + 16).attr('data-num', num)
+          // console.log(num)
+        }
+      }
+      // const target = Math.round(Math.random() * ($('.card').length - 1))
+      // $('.card').eq(target).insertAfter($('.card').eq(i))
+      // console.log(i)
+    }
+
+    for (let i = 0; i < 32; i++) {
+      const target = Math.round(Math.random() * ($('.card').length - 1))
+      $('.card').eq(target).insertAfter($('.card').eq(i))
+      // console.log(i)
+    }
+
+    $('#game').on('click', '.card', function () {
+      if ($('.card:not(.card-close)').length < 2 &&
+        $(this).hasClass('card-close') &&
+        !$(this).hasClass('card-ok')
+      ) {
+        $(this).removeClass('card-close')
+      }
+
+      if ($('.card:not(.card-close)').length === 2) {
+        if ($('.card:not(.card-close)').eq(0).attr('data-num') === $('.card:not(.card-close)').eq(1).attr('data-num')) {
+          $('.card:not(.card-close)').addClass('card-ok')
+          $('.card:not(.card-close)').fadeTo(1000, 0)
+        }
+        setTimeout(() => {
+          $('.card:not(.card-close)').addClass('card-close')
+          if ($('.card-ok').length === $('.card').length) {
+            Swal.fire({
+              icon: 'success',
+              title: '恭喜',
+              text: '恭喜過關'
+            })
+          }
+        }, 1000)
+      }
+    })
+    if ($('.card:not(.card-close)').length < 2 &&
+      $(this).hasClass('card-close') &&
+      !$(this).hasClass('card-ok')
+    ) {
+      $(this).removeClass('card-close')
+    }
+
+    if ($('.card:not(.card-close)').length === 2) {
+      if ($('.card:not(.card-close)').eq(0).attr('data-num') === $('.card:not(.card-close)').eq(1).attr('data-num')) {
+        $('.card:not(.card-close)').addClass('card-ok')
+        $('.card:not(.card-close)').fadeTo(1000, 0)
+      }
+      setTimeout(() => {
+        $('.card:not(.card-close)').addClass('card-close')
+        if ($('.card-ok').length === $('.card').length) {
+          Swal.fire({
+            icon: 'success',
+            title: '恭喜',
+            text: '恭喜過關'
+          }).then(function () {
+            location.reload();
+          }, 1000);
+        }
+      })
+    }
+
+  </script>
+</body>
+
+</html>
